@@ -1,6 +1,6 @@
 {
-  "name": "react-native-collapsible-tab-view",
-  "version": "6.2.1",
+  "name": "@ahmetkuslular/react-native-collapsible-tab-view",
+  "version": "0.0.1",
   "description": "Collapsible tab view component for React Native",
   "main": "lib/commonjs/index.js",
   "react-native": "src/index.tsx",
@@ -37,14 +37,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PedroBern/react-native-collapsible-tab-view.git"
+    "url": "git+https://github.com/ahmetkuslular/react-native-collapsible-tab-view.git"
   },
   "author": "Pedro Bern <pedrobermoreira@gmail.com> (https://github.com/pedrobern/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pedrobern/react-native-collapsible-tab-view/issues"
+    "url": "https://github.com/ahmetkuslular/react-native-collapsible-tab-view/issues"
   },
-  "homepage": "https://github.com/PedroBern/react-native-collapsible-tab-view#readme",
+  "homepage": "https://github.com/ahmetkuslular/react-native-collapsible-tab-view#readme",
   "devDependencies": {
     "@commitlint/config-conventional": "^9.1.1",
     "@microsoft/tsdoc": "^0.13.0",
@@ -67,7 +67,7 @@
     "react-docgen-typescript": "^1.20.5",
     "react-native": "~0.71.6",
     "react-native-builder-bob": "^0.18.2",
-    "react-native-gesture-handler": "~1.6.0",
+    "react-native-gesture-handler": "^2.12.1",
     "react-native-pager-view": "^5",
     "react-native-reanimated": "3.1.0",
     "release-it": "^13.6.6",

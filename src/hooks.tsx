@@ -686,3 +686,143 @@ export const usePageScrollHandler = (
     doDependenciesDiffer
   )
 }
+
+export const useSnap = () => {
+  const {
+    accDiffClamp,
+    snapThreshold,
+    revealHeaderOnScroll,
+    refMap,
+    scrollYCurrent,
+    headerScrollDistance,
+    snappingTo,
+    focusedTab,
+  } = useTabsContext()
+
+  const scrollTo = useScroller()
+
+  const tryToSnap = useCallback(() => {
+    'worklet'
+
+    if (typeof snapThreshold === 'number') {
+      if (revealHeaderOnScroll) {
+        if (accDiffClamp.value > 0) {
+          if (
+            scrollYCurrent.value >
+            headerScrollDistance.value * snapThreshold
+          ) {
+            if (
+              accDiffClamp.value <=
+              headerScrollDistance.value * snapThreshold
+            ) {
+              // snap down
+              accDiffClamp.value = withTiming(0, undefined)
+            } else if (accDiffClamp.value < headerScrollDistance.value) {
+              // snap up
+              accDiffClamp.value = withTiming(
+                headerScrollDistance.value,
+                undefined
+              )
+
+              if (scrollYCurrent.value < headerScrollDistance.value) {
+                scrollTo(
+                  refMap[focusedTab.value],
+                  0,
+                  headerScrollDistance.value,
+                  true,
+                  `[${focusedTab.value}] sticky snap up`
+                )
+              }
+            }
+          } else {
+            accDiffClamp.value = withTiming(0, undefined)
+          }
+        }
+      } else {
+        if (
+          scrollYCurrent.value <=
+          headerScrollDistance.value * snapThreshold
+        ) {
+          // snap down
+          snappingTo.value = 0
+          scrollTo(
+            refMap[focusedTab.value],
+            0,
+            0,
+            true,
+            `[${focusedTab.value}] snap down`
+          )
+        } else if (scrollYCurrent.value <= headerScrollDistance.value) {
+          // snap up
+          snappingTo.value = headerScrollDistance.value
+
+          scrollTo(
+            refMap[focusedTab.value],
+            0,
+            headerScrollDistance.value,
+            true,
+            `[${focusedTab.value}] snap up`
+          )
+        }
+      }
+    }
+  }, [
+    accDiffClamp,
+    focusedTab,
+    snappingTo,
+    headerScrollDistance,
+    scrollTo,
+    refMap,
+    revealHeaderOnScroll,
+    snapThreshold,
+    scrollYCurrent,
+  ])
+
+  return tryToSnap
+}
+
+export const useOnScroll = () => {
+  const {
+    accDiffClamp,
+    revealHeaderOnScroll,
+    index,
+    scrollYCurrent,
+    scrollY,
+    oldAccScrollY,
+    accScrollY,
+    offset,
+    headerScrollDistance,
+  } = useTabsContext()
+
+  const onScroll = useCallback(() => {
+    'worklet'
+
+    scrollY.value[index.value] = scrollYCurrent.value
+    oldAccScrollY.value = accScrollY.value
+    accScrollY.value = scrollY.value[index.value] + offset.value
+
+    if (revealHeaderOnScroll) {
+      const delta = accScrollY.value - oldAccScrollY.value
+      const nextValue = accDiffClamp.value + delta
+      if (delta > 0) {
+        // scrolling down
+        accDiffClamp.value = Math.min(headerScrollDistance.value, nextValue)
+      } else if (delta < 0) {
+        // scrolling up
+        accDiffClamp.value = Math.max(0, nextValue)
+      }
+    }
+  }, [
+    scrollY,
+    oldAccScrollY,
+    index,
+    accDiffClamp,
+    accScrollY,
+    headerScrollDistance,
+    revealHeaderOnScroll,
+    offset,
+    scrollYCurrent,
+  ])
+
+  return onScroll
+}

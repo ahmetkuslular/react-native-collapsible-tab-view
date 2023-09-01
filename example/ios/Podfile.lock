@@ -335,7 +335,7 @@ PODS:
     - React-jsi (= 0.71.6)
     - React-logger (= 0.71.6)
     - React-perflogger (= 0.71.6)
-  - RNFlashList (1.4.2):
+  - RNFlashList (1.5.0):
     - React-Core
   - RNGestureHandler (2.9.0):
     - React-Core
@@ -555,7 +555,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 73d201599a64ea14b4e0b8f91b64970979fd92e6
   React-runtimeexecutor: 8692ac548bec648fa121980ccb4304afd136d584
   ReactCommon: e1067159764444e5db7c14e294d5cd79fb159c59
-  RNFlashList: 7fbca4fc075484a9426f1610d648dbea2de94eb0
+  RNFlashList: 25b0e092b4470c84db0386d4f5316dc34123bb6d
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNReanimated: f13888574906e326894b4978b8c670c3a4063aec
   Yoga: ba09b6b11e6139e3df8229238aa794205ca6a02a

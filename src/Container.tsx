@@ -10,7 +10,6 @@ import Animated, {
   runOnJS,
   runOnUI,
   useAnimatedReaction,
-  useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withDelay,
@@ -18,9 +17,12 @@ import Animated, {
 } from 'react-native-reanimated'
 
 import { Context, TabNameContext } from './Context'
+import { HeaderContainer } from './HeaderContainer'
 import { Lazy } from './Lazy'
 import { MaterialTabBar, TABBAR_HEIGHT } from './MaterialTabBar'
 import { Tab } from './Tab'
+import { TabBarContainer } from './TabBarContainer'
+import { TopContainer } from './TopContainer'
 import { IS_IOS, ONE_FRAME_MS, scrollToImpl } from './helpers'
 import {
   useAnimatedDynamicRefs,
@@ -113,6 +115,7 @@ export const Container = React.memo(
           : 0
       })
 
+      const isSlidingTopContainer = useSharedValue(false)
       const snappingTo: ContextType['snappingTo'] = useSharedValue(0)
       const offset: ContextType['offset'] = useSharedValue(0)
       const accScrollY: ContextType['accScrollY'] = useSharedValue(0)
@@ -254,34 +257,6 @@ export const Container = React.memo(
           : -Math.min(scrollYCurrent.value, headerScrollDistance.value)
       }, [revealHeaderOnScroll])
 
-      const stylez = useAnimatedStyle(() => {
-        return {
-          transform: [
-            {
-              translateY: headerTranslateY.value,
-            },
-          ],
-        }
-      }, [revealHeaderOnScroll])
-
-      const getHeaderHeight = React.useCallback(
-        (event: LayoutChangeEvent) => {
-          const height = event.nativeEvent.layout.height
-          if (headerHeight.value !== height) {
-            headerHeight.value = height
-          }
-        },
-        [headerHeight]
-      )
-
-      const getTabBarHeight = React.useCallback(
-        (event: LayoutChangeEvent) => {
-          const height = event.nativeEvent.layout.height
-          if (tabBarHeight.value !== height) tabBarHeight.value = height
-        },
-        [tabBarHeight]
-      )
-
       const onLayout = React.useCallback(
         (event: LayoutChangeEvent) => {
           const height = event.nativeEvent.layout.height
@@ -374,6 +349,7 @@ export const Container = React.memo(
             headerTranslateY,
             width,
             allowHeaderOverscroll,
+            isSlidingTopContainer,
           }}
         >
           <Animated.View
@@ -381,48 +357,27 @@ export const Container = React.memo(
             onLayout={onLayout}
             pointerEvents="box-none"
           >
-            <Animated.View
-              pointerEvents="box-none"
-              style={[
-                styles.topContainer,
-                headerContainerStyle,
-                !cancelTranslation && stylez,
-              ]}
+            <TopContainer
+              cancelTranslation={cancelTranslation}
+              headerContainerStyle={headerContainerStyle}
             >
-              <View
-                style={[styles.container, styles.headerContainer]}
-                onLayout={getHeaderHeight}
-                pointerEvents="box-none"
-              >
-                {renderHeader &&
-                  renderHeader({
-                    containerRef,
-                    index,
-                    tabNames: tabNamesArray,
-                    focusedTab,
-                    indexDecimal,
-                    onTabPress,
-                    tabProps,
-                  })}
-              </View>
-              <View
-                style={[styles.container, styles.tabBarContainer]}
-                onLayout={getTabBarHeight}
-                pointerEvents="box-none"
-              >
-                {renderTabBar &&
-                  renderTabBar({
-                    containerRef,
-                    index,
-                    tabNames: tabNamesArray,
-                    focusedTab,
-                    indexDecimal,
-                    width,
-                    onTabPress,
-                    tabProps,
-                  })}
-              </View>
-            </Animated.View>
+              <HeaderContainer
+                containerRef={containerRef}
+                onTabPress={onTabPress}
+                tabNamesArray={tabNamesArray}
+                tabProps={tabProps}
+                renderHeader={renderHeader}
+              />
+
+              <TabBarContainer
+                containerRef={containerRef}
+                onTabPress={onTabPress}
+                tabNamesArray={tabNamesArray}
+                tabProps={tabProps}
+                width={width}
+                renderTabBar={renderTabBar}
+              />
+            </TopContainer>
 
             <AnimatedPagerView
               ref={containerRef}
@@ -460,25 +415,5 @@ export const Container = React.memo(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  topContainer: {
-    position: 'absolute',
-    zIndex: 100,
-    width: '100%',
-    backgroundColor: 'white',
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-  },
-  tabBarContainer: {
-    zIndex: 1,
-  },
-  headerContainer: {
-    zIndex: 2,
   },
 })
